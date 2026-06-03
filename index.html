@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDM Environment Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', sans-serif;
+            background: linear-gradient(135deg, #032D60 0%, #0176D3 100%);
+            color: #032D60;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Summary Stats */
+        .summary-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+
+        .summary-stat {
+            text-align: center;
+            color: white;
+        }
+
+        .summary-stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .summary-stat-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        /* Environment Cards Grid */
+        .env-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 24px;
+        }
+
+        .env-card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border-left: 6px solid #0176D3;
+        }
+
+        .env-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+
+        .env-card-header {
+            margin-bottom: 16px;
+        }
+
+        .env-card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #032D60;
+            margin-bottom: 8px;
+        }
+
+        .env-card-org-id {
+            font-size: 13px;
+            color: #6B7280;
+            font-family: 'Courier New', monospace;
+            background: #F3F3F3;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .env-card-stats {
+            display: flex;
+            gap: 24px;
+            margin: 20px 0;
+        }
+
+        .env-stat {
+            flex: 1;
+        }
+
+        .env-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0176D3;
+        }
+
+        .env-stat-label {
+            font-size: 11px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .env-card-footer {
+            border-top: 1px solid #E5E7EB;
+            padding-top: 16px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 4px 4px 4px 0;
+            background: #E0F2FE;
+            color: #0176D3;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: white;
+            border-radius: 12px;
+            padding: 60px;
+            text-align: center;
+            color: #6B7280;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            color: #032D60;
+            margin-bottom: 12px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: white;
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            .env-grid {
+                grid-template-columns: 1fr;
+            }
+            .summary-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>MDM Environment Documentation</h1>
+            <p>Comprehensive documentation for Master Data Management environments</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchInput" placeholder="Search environments..." onkeyup="filterEnvironments()">
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="summary-stats">
+            <div class="summary-stat">
+                <div class="summary-stat-value">1</div>
+                <div class="summary-stat-label">Environments</div>
+            </div>
+            <div class="summary-stat">
+                <div class="summary-stat-value">11</div>
+                <div class="summary-stat-label">Total Entities</div>
+            </div>
+            <div class="summary-stat">
+                <div class="summary-stat-value">5</div>
+                <div class="summary-stat-label">Use Cases</div>
+            </div>
+        </div>
+
+        <!-- Environment Cards -->
+        <div class="env-grid" id="envGrid">
+            <!-- Industrial Manufacturing Environment -->
+            <a href="env-industrial-manufacturing.html" class="env-card" data-env="industrial manufacturing">
+                <div class="env-card-header">
+                    <div class="env-card-title">Industrial Manufacturing</div>
+                    <div class="env-card-org-id">7XRX7lLm9QEkrgxi7U2J2R</div>
+                </div>
+
+                <div class="env-card-stats">
+                    <div class="env-stat">
+                        <div class="env-stat-value">5</div>
+                        <div class="env-stat-label">Use Cases</div>
+                    </div>
+                    <div class="env-stat">
+                        <div class="env-stat-value">11</div>
+                        <div class="env-stat-label">Entities</div>
+                    </div>
+                    <div class="env-stat">
+                        <div class="env-stat-value">6</div>
+                        <div class="env-stat-label">Demos</div>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="tag">Supplier Mastering</span>
+                    <span class="tag">Distributor Network</span>
+                    <span class="tag">BOM</span>
+                    <span class="tag">Supply Chain</span>
+                    <span class="tag">Product360</span>
+                </div>
+
+                <div class="env-card-footer">
+                    Last updated: June 3, 2026
+                </div>
+            </a>
+        </div>
+
+        <!-- Empty State (hidden when environments exist) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">📋</div>
+            <h2>No environments found</h2>
+            <p>Try adjusting your search or add a new environment</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            MDM Environment Documentation System | Last updated: June 3, 2026
+        </div>
+    </div>
+
+    <script>
+        function filterEnvironments() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const grid = document.getElementById('envGrid');
+            const cards = grid.getElementsByClassName('env-card');
+            const emptyState = document.getElementById('emptyState');
+
+            let visibleCount = 0;
+
+            for (let i = 0; i < cards.length; i++) {
+                const searchText = cards[i].getAttribute('data-env');
+                if (searchText.toLowerCase().indexOf(filter) > -1) {
+                    cards[i].style.display = '';
+                    visibleCount++;
+                } else {
+                    cards[i].style.display = 'none';
+                }
+            }
+
+            // Show empty state if no results
+            if (visibleCount === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+            } else {
+                grid.style.display = 'grid';
+                emptyState.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

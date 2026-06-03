@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial Manufacturing - MDM Environment Documentation (Editable)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', sans-serif;
+            background: #F3F3F3;
+            color: #032D60;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Edit Mode Toggle */
+        .edit-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            background: #0176D3;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(1, 118, 211, 0.3);
+            transition: all 0.3s;
+        }
+
+        .edit-mode-toggle:hover {
+            background: #032D60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(1, 118, 211, 0.4);
+        }
+
+        .edit-mode-toggle.active {
+            background: #FF538A;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #032D60;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            background: #021829;
+            border-bottom: 2px solid #0176D3;
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .org-id {
+            font-size: 12px;
+            color: #8DB9F5;
+            font-family: 'Courier New', monospace;
+        }
+
+        .nav-menu {
+            padding: 16px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(1, 118, 211, 0.2);
+            border-left-color: #0176D3;
+        }
+
+        .nav-item.active {
+            background: rgba(1, 118, 211, 0.3);
+            border-left-color: #FF538A;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            color: #032D60;
+            margin-bottom: 12px;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            color: #6B7280;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0176D3;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #032D60;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #0176D3;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: #0176D3;
+            color: white;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        tbody tr:hover {
+            background: #F9FAFB;
+        }
+
+        /* Editable cells */
+        .editable {
+            position: relative;
+            cursor: text;
+            min-height: 20px;
+        }
+
+        body.edit-mode .editable {
+            background: #FEF3C7;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px dashed #F59E0B;
+        }
+
+        body.edit-mode .editable:hover {
+            background: #FDE68A;
+            border-color: #D97706;
+        }
+
+        body.edit-mode .editable:focus {
+            outline: 2px solid #0176D3;
+            background: white;
+        }
+
+        /* Save indicator */
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #059669;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .save-indicator.error {
+            background: #DC2626;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 4px 4px 4px 0;
+        }
+
+        .tag.primary {
+            background: #E0F2FE;
+            color: #0176D3;
+        }
+
+        .tag.secondary {
+            background: #FFE8F1;
+            color: #FF538A;
+        }
+
+        .tag.success {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(3, 45, 96, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #E0F2FE;
+            border-top-color: #0176D3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Edit Mode Toggle -->
+    <button class="edit-mode-toggle" id="editModeToggle" onclick="toggleEditMode()">
+        📝 Enable Editing
+    </button>
+
+    <!-- Save Indicator -->
+    <div class="save-indicator" id="saveIndicator">
+        ✓ Saved to Google Sheets
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 id="env-name">Industrial Manufacturing</h1>
+                <div class="org-id" id="env-org-id">7XRX7lLm9QEkrgxi7U2J2R</div>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="scrollToSection('overview')">Overview</div>
+                <div class="nav-item" onclick="scrollToSection('customer-demos')">Customer Demos</div>
+                <div class="nav-item" onclick="scrollToSection('use-cases')">Use Case Areas</div>
+                <div class="nav-item" onclick="scrollToSection('entities')">Business Entities</div>
+                <div class="nav-item" onclick="scrollToSection('hierarchies')">Hierarchies</div>
+                <div class="nav-item" onclick="scrollToSection('relationships')">Relationships</div>
+                <div class="nav-item" onclick="scrollToSection('data-quality')">Data Quality</div>
+                <div class="nav-item" onclick="scrollToSection('cai-processes')">CAI Processes</div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1 id="header-name">Industrial Manufacturing Environment</h1>
+                <div class="subtitle" id="header-subtitle">Loading data from Google Sheets...</div>
+                <div class="stats-bar" id="stats-bar">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Overview Section -->
+            <section id="overview">
+                <h2 class="section-title">Overview</h2>
+                <div class="card" id="overview-card">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Customer Demos Section -->
+            <section id="customer-demos">
+                <h2 class="section-title">Customer Demos</h2>
+                <table id="demos-table">
+                    <thead>
+                        <tr>
+                            <th>Demo Name</th>
+                            <th>Use Case(s)</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="demos-tbody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Use Case Areas Section -->
+            <section id="use-cases">
+                <h2 class="section-title">Use Case Areas</h2>
+                <div id="use-cases-container">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Business Entities Section -->
+            <section id="entities">
+                <h2 class="section-title">Business Entities</h2>
+                <table id="entities-table">
+                    <thead>
+                        <tr>
+                            <th>Entity Name</th>
+                            <th>Entity ID</th>
+                            <th>Description</th>
+                            <th>Use Case(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="entities-tbody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Other sections... -->
+            <section id="hierarchies">
+                <h2 class="section-title">Hierarchies</h2>
+                <div class="card">
+                    <p>To be configured in Google Sheets</p>
+                </div>
+            </section>
+
+            <section id="relationships">
+                <h2 class="section-title">Relationships</h2>
+                <div class="card">
+                    <p>To be configured in Google Sheets</p>
+                </div>
+            </section>
+
+            <section id="data-quality">
+                <h2 class="section-title">Data Quality</h2>
+                <div class="card">
+                    <p>To be configured in Google Sheets</p>
+                </div>
+            </section>
+
+            <section id="cai-processes">
+                <h2 class="section-title">CAI Processes</h2>
+                <div class="card">
+                    <p>To be configured in Google Sheets</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="google-sheets-integration.js"></script>
+    <script>
+        const ENV_ID = 'industrial-manufacturing';
+        let editMode = false;
+
+        // Load data on page load
+        window.addEventListener('load', async () => {
+            await loadAllData();
+        });
+
+        async function loadAllData() {
+            showLoading(true);
+            try {
+                // Load environment overview
+                const env = await googleSheets.getEnvironment(ENV_ID);
+                if (env) {
+                    populateOverview(env);
+                }
+
+                // Load customer demos
+                const demos = await googleSheets.getCustomerDemos(ENV_ID);
+                populateDemos(demos);
+
+                // Load use cases
+                const useCases = await googleSheets.getUseCases(ENV_ID);
+                populateUseCases(useCases);
+
+                // Load business entities
+                const entities = await googleSheets.getBusinessEntities(ENV_ID);
+                populateEntities(entities);
+
+                showSaveIndicator('✓ Data loaded from Google Sheets', 'success');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showSaveIndicator('⚠ Error loading data', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function populateOverview(env) {
+            document.getElementById('header-subtitle').textContent = env.description;
+
+            const statsBar = document.getElementById('stats-bar');
+            statsBar.innerHTML = `
+                <div class="stat">
+                    <div class="stat-value">${env.entity_count}</div>
+                    <div class="stat-label">Business Entities</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">${env.use_case_count}</div>
+                    <div class="stat-label">Use Cases</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">${env.demo_count}</div>
+                    <div class="stat-label">Customer Demos</div>
+                </div>
+            `;
+
+            const overviewCard = document.getElementById('overview-card');
+            overviewCard.innerHTML = `
+                <h3>Environment Details</h3>
+                <p><strong>Name:</strong> <span class="editable" data-sheet="environments" data-field="name" data-id="${env.env_id}">${env.name}</span></p>
+                <p><strong>Org ID:</strong> <code>${env.org_id}</code></p>
+                <p><strong>Description:</strong> <span class="editable" data-sheet="environments" data-field="description" data-id="${env.env_id}">${env.description}</span></p>
+                <p class="last-updated"><strong>Last Updated:</strong> ${env.last_updated}</p>
+            `;
+        }
+
+        function populateDemos(demos) {
+            const tbody = document.getElementById('demos-tbody');
+            tbody.innerHTML = demos.map(demo => `
+                <tr>
+                    <td><strong>${demo.demo_name}</strong></td>
+                    <td><span class="editable" data-sheet="customer_demos" data-field="use_cases" data-id="${demo.demo_name}" data-env="${ENV_ID}">${demo.use_cases || 'TBD'}</span></td>
+                    <td class="editable" data-sheet="customer_demos" data-field="notes" data-id="${demo.demo_name}" data-env="${ENV_ID}">${demo.notes || ''}</td>
+                </tr>
+            `).join('');
+        }
+
+        function populateUseCases(useCases) {
+            const container = document.getElementById('use-cases-container');
+            container.innerHTML = useCases.map(uc => `
+                <div class="card">
+                    <h3>${uc.name}</h3>
+                    <p class="editable" data-sheet="use_cases" data-field="description" data-id="${uc.use_case_id}" data-env="${ENV_ID}">${uc.description}</p>
+                    <div style="margin-top: 12px;">
+                        <span class="tag success">${uc.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateEntities(entities) {
+            const tbody = document.getElementById('entities-tbody');
+            tbody.innerHTML = entities.map(entity => {
+                const useCaseTags = (entity.use_cases || '').split(',')
+                    .filter(uc => uc.trim())
+                    .map(uc => `<span class="tag primary">${uc.trim()}</span>`)
+                    .join('');
+
+                return `
+                    <tr>
+                        <td><strong>${entity.entity_name}</strong></td>
+                        <td class="editable" data-sheet="business_entities" data-field="entity_id" data-id="${entity.entity_name}" data-env="${ENV_ID}">${entity.entity_id || 'TBD'}</td>
+                        <td class="editable" data-sheet="business_entities" data-field="description" data-id="${entity.entity_name}" data-env="${ENV_ID}">${entity.description}</td>
+                        <td>${useCaseTags}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            document.body.classList.toggle('edit-mode', editMode);
+
+            const toggleBtn = document.getElementById('editModeToggle');
+            if (editMode) {
+                toggleBtn.textContent = '💾 Save & Exit Editing';
+                toggleBtn.classList.add('active');
+                enableEditing();
+            } else {
+                toggleBtn.textContent = '📝 Enable Editing';
+                toggleBtn.classList.remove('active');
+                disableEditing();
+            }
+        }
+
+        function enableEditing() {
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(el => {
+                el.contentEditable = true;
+                el.addEventListener('blur', handleEdit);
+            });
+        }
+
+        function disableEditing() {
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(el => {
+                el.contentEditable = false;
+                el.removeEventListener('blur', handleEdit);
+            });
+        }
+
+        async function handleEdit(event) {
+            const el = event.target;
+            const sheet = el.dataset.sheet;
+            const field = el.dataset.field;
+            const id = el.dataset.id;
+            const envId = el.dataset.env || ENV_ID;
+            const newValue = el.textContent.trim();
+
+            try {
+                showLoading(true);
+
+                const sheetId = googleSheets.CONFIG.SHEET_IDS[sheet];
+                const matchColumn = sheet === 'environments' ? 'env_id' : 'entity_name';
+
+                await googleSheets.findAndUpdateRow(sheetId, matchColumn, id, {
+                    [field]: newValue
+                });
+
+                showSaveIndicator('✓ Saved to Google Sheets', 'success');
+            } catch (error) {
+                console.error('Error saving:', error);
+                showSaveIndicator('⚠ Error saving changes', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function showSaveIndicator(message, type = 'success') {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.textContent = message;
+            indicator.classList.remove('error');
+            if (type === 'error') {
+                indicator.classList.add('error');
+            }
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 3000);
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.toggle('show', show);
+        }
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.currentTarget.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

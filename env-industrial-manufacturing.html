@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial Manufacturing - MDM Environment Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', sans-serif;
+            background: #F3F3F3;
+            color: #032D60;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Side Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #032D60;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            background: #021829;
+            border-bottom: 2px solid #0176D3;
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .org-id {
+            font-size: 12px;
+            color: #8DB9F5;
+            font-family: 'Courier New', monospace;
+        }
+
+        .nav-menu {
+            padding: 16px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(1, 118, 211, 0.2);
+            border-left-color: #0176D3;
+        }
+
+        .nav-item.active {
+            background: rgba(1, 118, 211, 0.3);
+            border-left-color: #FF538A;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            color: #032D60;
+            margin-bottom: 12px;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            color: #6B7280;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0176D3;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #032D60;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #0176D3;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: #0176D3;
+            color: white;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        tbody tr:hover {
+            background: #F9FAFB;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 4px 4px 4px 0;
+        }
+
+        .tag.primary {
+            background: #E0F2FE;
+            color: #0176D3;
+        }
+
+        .tag.secondary {
+            background: #FFE8F1;
+            color: #FF538A;
+        }
+
+        .tag.success {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        /* Use Case Grid */
+        .use-case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .use-case-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #0176D3;
+        }
+
+        .use-case-card h3 {
+            color: #032D60;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .use-case-card p {
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        /* Entity Grid */
+        .entity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .entity-badge {
+            background: white;
+            border: 2px solid #0176D3;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            font-weight: 600;
+            color: #032D60;
+            transition: all 0.2s;
+        }
+
+        .entity-badge:hover {
+            background: #0176D3;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Placeholder */
+        .placeholder {
+            background: #FEF3C7;
+            border: 2px dashed #F59E0B;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            color: #92400E;
+        }
+
+        .placeholder-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        /* Mermaid diagrams */
+        .mermaid {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        /* Demo table editable styling */
+        .demo-notes {
+            font-style: italic;
+            color: #6B7280;
+        }
+
+        /* Last updated */
+        .last-updated {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                padding: 20px;
+            }
+            .use-case-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>Industrial Manufacturing</h1>
+                <div class="org-id">7XRX7lLm9QEkrgxi7U2J2R</div>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="scrollToSection('overview')">Overview</div>
+                <div class="nav-item" onclick="scrollToSection('customer-demos')">Customer Demos</div>
+                <div class="nav-item" onclick="scrollToSection('use-cases')">Use Case Areas</div>
+                <div class="nav-item" onclick="scrollToSection('entities')">Business Entities</div>
+                <div class="nav-item" onclick="scrollToSection('hierarchies')">Hierarchies</div>
+                <div class="nav-item" onclick="scrollToSection('relationships')">Relationships</div>
+                <div class="nav-item" onclick="scrollToSection('data-quality')">Data Quality</div>
+                <div class="nav-item" onclick="scrollToSection('cai-processes')">CAI Processes</div>
+                <div class="nav-item" onclick="scrollToSection('data-models')">Data Models</div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1>Industrial Manufacturing Environment</h1>
+                <div class="subtitle">Comprehensive MDM environment for manufacturing master data management</div>
+                <div class="stats-bar">
+                    <div class="stat">
+                        <div class="stat-value">11</div>
+                        <div class="stat-label">Business Entities</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Use Cases</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Customer Demos</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overview Section -->
+            <section id="overview">
+                <h2 class="section-title">Overview</h2>
+                <div class="card">
+                    <h3>Environment Details</h3>
+                    <p><strong>Name:</strong> Industrial Manufacturing</p>
+                    <p><strong>Org ID:</strong> <code>7XRX7lLm9QEkrgxi7U2J2R</code></p>
+                    <p><strong>Purpose:</strong> Master data management environment supporting manufacturing operations including supplier mastering, distributor networks, bill of materials, supply chain management, and product catalogs with dynamic attributes.</p>
+                    <p class="last-updated"><strong>Last Updated:</strong> June 3, 2026</p>
+                </div>
+            </section>
+
+            <!-- Customer Demos Section -->
+            <section id="customer-demos">
+                <h2 class="section-title">Customer Demos</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Demo Name</th>
+                            <th>Use Case(s)</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Seaman Paper</strong></td>
+                            <td><span class="tag primary">TBD</span></td>
+                            <td class="demo-notes">To be configured</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Messer</strong></td>
+                            <td><span class="tag primary">TBD</span></td>
+                            <td class="demo-notes">To be configured</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Entegris</strong></td>
+                            <td><span class="tag primary">TBD</span></td>
+                            <td class="demo-notes">To be configured</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sinclair</strong></td>
+                            <td><span class="tag primary">TBD</span></td>
+                            <td class="demo-notes">To be configured</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Koch</strong></td>
+                            <td><span class="tag primary">TBD</span></td>
+                            <td class="demo-notes">To be configured</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AgCo</strong></td>
+                            <td><span class="tag primary">TBD</span></td>
+                            <td class="demo-notes">To be configured</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Use Case Areas Section -->
+            <section id="use-cases">
+                <h2 class="section-title">Use Case Areas</h2>
+                <div class="use-case-grid">
+                    <div class="use-case-card">
+                        <h3>Supplier Mastering</h3>
+                        <p>Match/Merge/Survivorship capabilities for supplier data quality and consolidation</p>
+                        <div style="margin-top: 12px;">
+                            <span class="tag success">Active</span>
+                        </div>
+                    </div>
+                    <div class="use-case-card">
+                        <h3>Distributor Network</h3>
+                        <p>Material Consolidation and Parent Relationships for distributor hierarchy management</p>
+                        <div style="margin-top: 12px;">
+                            <span class="tag success">Active</span>
+                        </div>
+                    </div>
+                    <div class="use-case-card">
+                        <h3>Bill of Materials (BOM)</h3>
+                        <p>Raw Material, Semi-Finished, and Finished Goods product structure management</p>
+                        <div style="margin-top: 12px;">
+                            <span class="tag success">Active</span>
+                        </div>
+                    </div>
+                    <div class="use-case-card">
+                        <h3>Supply Chain</h3>
+                        <p>Plant and Production Line master data for manufacturing operations</p>
+                        <div style="margin-top: 12px;">
+                            <span class="tag success">Active</span>
+                        </div>
+                    </div>
+                    <div class="use-case-card">
+                        <h3>Product360</h3>
+                        <p>Product Categorization and Dynamic Attributes for comprehensive product management</p>
+                        <div style="margin-top: 12px;">
+                            <span class="tag success">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Entities Section -->
+            <section id="entities">
+                <h2 class="section-title">Business Entities</h2>
+                <div class="entity-grid">
+                    <div class="entity-badge">Business Unit</div>
+                    <div class="entity-badge">Category</div>
+                    <div class="entity-badge">Contact</div>
+                    <div class="entity-badge">Supplier</div>
+                    <div class="entity-badge">Person</div>
+                    <div class="entity-badge">Legal Entity</div>
+                    <div class="entity-badge">Material</div>
+                    <div class="entity-badge">Material Category</div>
+                    <div class="entity-badge">Organization</div>
+                    <div class="entity-badge">Item (Product)</div>
+                    <div class="entity-badge">Region</div>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <h3 style="margin-bottom: 16px;">Entity Details</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Entity Name</th>
+                                <th>Entity ID</th>
+                                <th>Description</th>
+                                <th>Use Case(s)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Supplier (Vendor, Distributor)</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Vendor and Distributor master data</td>
+                                <td><span class="tag primary">Supplier Mastering</span><span class="tag primary">Distributor Network</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Material</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Raw materials, semi-finished, and finished goods</td>
+                                <td><span class="tag primary">BOM</span><span class="tag primary">Product360</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Item (Product)</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Product catalog with categorization</td>
+                                <td><span class="tag primary">Product360</span><span class="tag primary">BOM</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Category</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Product and material categorization</td>
+                                <td><span class="tag primary">Product360</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Material Category</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Material-specific categorization hierarchy</td>
+                                <td><span class="tag primary">Product360</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Business Unit</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Organizational business units</td>
+                                <td><span class="tag primary">Supply Chain</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Organization</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Distributor and organizational entities</td>
+                                <td><span class="tag primary">Distributor Network</span><span class="tag primary">Supply Chain</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Legal Entity</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Legal entity master data</td>
+                                <td><span class="tag primary">Distributor Network</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Person (Farm Customer, Customer)</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Farm Customer and Customer contacts</td>
+                                <td><span class="tag primary">Distributor Network</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Contact</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Contact information for entities</td>
+                                <td><span class="tag primary">Supplier Mastering</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Region</strong></td>
+                                <td><em>TBD</em></td>
+                                <td>Geographic regions for distribution and operations</td>
+                                <td><span class="tag primary">Supply Chain</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Hierarchies Section -->
+            <section id="hierarchies">
+                <h2 class="section-title">Hierarchies</h2>
+                <div class="placeholder">
+                    <div class="placeholder-icon">📊</div>
+                    <h3>Hierarchy structures to be documented</h3>
+                    <p>This section will include details about hierarchy configurations, levels, and relationships.</p>
+                </div>
+            </section>
+
+            <!-- Relationships Section -->
+            <section id="relationships">
+                <h2 class="section-title">Relationships</h2>
+                <div class="placeholder">
+                    <div class="placeholder-icon">🔗</div>
+                    <h3>Entity relationships to be documented</h3>
+                    <p>This section will include relationship types, cardinality, and entity relationship diagrams.</p>
+                </div>
+            </section>
+
+            <!-- Data Quality Section -->
+            <section id="data-quality">
+                <h2 class="section-title">Data Quality</h2>
+                <div class="placeholder">
+                    <div class="placeholder-icon">✓</div>
+                    <h3>Data quality rules to be documented</h3>
+                    <p>This section will include quality rules, validation logic, match/merge configurations, and stewardship workflows.</p>
+                </div>
+            </section>
+
+            <!-- CAI Processes Section -->
+            <section id="cai-processes">
+                <h2 class="section-title">CAI Processes</h2>
+                <div class="placeholder">
+                    <div class="placeholder-icon">⚙️</div>
+                    <h3>CAI processes to be documented</h3>
+                    <p>This section will include process definitions, schedules, dependencies, and execution status.</p>
+                </div>
+            </section>
+
+            <!-- Data Models Section -->
+            <section id="data-models">
+                <h2 class="section-title">Data Models</h2>
+
+                <div class="card">
+                    <h3>Overall Data Model</h3>
+                    <p>Complete entity relationship diagram for the Industrial Manufacturing environment.</p>
+                    <div class="mermaid">
+                        graph TB
+                            subgraph Supply Chain
+                                BU[Business Unit]
+                                Org[Organization]
+                                Region[Region]
+                            end
+
+                            subgraph Products & Materials
+                                Item[Item/Product]
+                                Material[Material]
+                                Cat[Category]
+                                MatCat[Material Category]
+                            end
+
+                            subgraph Partners & Customers
+                                Supplier[Supplier/Vendor/Distributor]
+                                Person[Person/Customer]
+                                LE[Legal Entity]
+                                Contact[Contact]
+                            end
+
+                            Supplier -->|supplies| Material
+                            Supplier -->|distributes| Item
+                            Material -->|categorized by| MatCat
+                            Item -->|categorized by| Cat
+                            Material -->|component of| Item
+                            Org -->|operates in| Region
+                            Org -->|has| BU
+                            Supplier -->|parent| Org
+                            Person -->|contact for| Supplier
+                            Contact -->|associated with| Supplier
+                            LE -->|legal entity for| Org
+
+                            style Item fill:#0176D3,color:#fff
+                            style Material fill:#0176D3,color:#fff
+                            style Supplier fill:#FF538A,color:#fff
+                            style Org fill:#032D60,color:#fff
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Use Case: Supplier Mastering</h3>
+                    <div class="mermaid">
+                        graph LR
+                            Supplier[Supplier/Vendor]
+                            Contact[Contact]
+                            Org[Organization]
+                            LE[Legal Entity]
+
+                            Supplier -->|has contacts| Contact
+                            Supplier -->|parent org| Org
+                            Org -->|legal entity| LE
+
+                            style Supplier fill:#FF538A,color:#fff
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Use Case: Distributor Network</h3>
+                    <div class="mermaid">
+                        graph TB
+                            Supplier[Supplier/Distributor]
+                            Org[Organization]
+                            Person[Person/Customer]
+                            LE[Legal Entity]
+                            Material[Material]
+
+                            Supplier -->|parent org| Org
+                            Org -->|legal entity| LE
+                            Person -->|customer of| Supplier
+                            Supplier -->|consolidates| Material
+
+                            style Supplier fill:#FF538A,color:#fff
+                            style Org fill:#032D60,color:#fff
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Use Case: Bill of Materials (BOM)</h3>
+                    <div class="mermaid">
+                        graph TB
+                            Item[Item/Product<br/>Finished Goods]
+                            Material[Material<br/>Semi-Finished]
+                            RawMat[Material<br/>Raw Material]
+
+                            RawMat -->|component of| Material
+                            Material -->|component of| Item
+
+                            style Item fill:#0176D3,color:#fff
+                            style Material fill:#0176D3,color:#fff
+                            style RawMat fill:#0176D3,color:#fff
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Use Case: Supply Chain</h3>
+                    <div class="mermaid">
+                        graph LR
+                            BU[Business Unit]
+                            Org[Organization]
+                            Region[Region]
+                            Material[Material]
+
+                            Org -->|operates in| Region
+                            Org -->|has| BU
+                            BU -->|produces| Material
+
+                            style Org fill:#032D60,color:#fff
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Use Case: Product360</h3>
+                    <div class="mermaid">
+                        graph TB
+                            Item[Item/Product]
+                            Cat[Category]
+                            Material[Material]
+                            MatCat[Material Category]
+
+                            Item -->|categorized by| Cat
+                            Material -->|categorized by| MatCat
+                            Cat -->|parent category| Cat
+                            MatCat -->|parent category| MatCat
+
+                            style Item fill:#0176D3,color:#fff
+                            style Material fill:#0176D3,color:#fff
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#0176D3',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#032D60',
+                lineColor: '#6B7280',
+                secondaryColor: '#FF538A',
+                tertiaryColor: '#F3F3F3'
+            }
+        });
+
+        // Navigation functionality
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.currentTarget.classList.add('active');
+            }
+        }
+
+        // Highlight active section on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navItems = document.querySelectorAll('.nav-item');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                const sectionId = item.getAttribute('onclick').match(/'([^']+)'/)[1];
+                if (sectionId === current) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
