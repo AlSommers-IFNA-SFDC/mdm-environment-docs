@@ -12,14 +12,14 @@ const CONFIG = {
 
     // Google Sheets IDs - Get these from your sheet URLs
     SHEET_IDS: {
-        environments: 'YOUR_ENVIRONMENTS_SHEET_ID',
-        use_cases: 'YOUR_USE_CASES_SHEET_ID',
-        business_entities: 'YOUR_BUSINESS_ENTITIES_SHEET_ID',
-        customer_demos: 'YOUR_CUSTOMER_DEMOS_SHEET_ID',
-        hierarchies: 'YOUR_HIERARCHIES_SHEET_ID',
-        relationships: 'YOUR_RELATIONSHIPS_SHEET_ID',
-        data_quality_rules: 'YOUR_DATA_QUALITY_RULES_SHEET_ID',
-        cai_processes: 'YOUR_CAI_PROCESSES_SHEET_ID'
+        environments: '1L9W4_kUfDPWOrZKZZVjZkpAHB80kadyj3uGgDqvoWRU',
+        use_cases: '1wItpKtnHXZgXPirEQ_s26ZqLFwynbNp1J3fuUdJiEDw',
+        business_entities: '1CQTt8qQRYiLPNhYQlKnqxkYFM5-tONDfPHg6hJD1BPM',
+        customer_demos: '1rQj98r6E6G7vhnHM4Rfux3lZyC9RL85TI9QBjvhML6Y',
+        hierarchies: '10yoDt_VAjn9Hkhl6GoZQgHvhfE10SwOfb5yG9Usbwdg',
+        relationships: '13P_BjoppHlPRQtzgrX-lv9XxhlV153FJUBcxgBZviEs',
+        data_quality_rules: '1OL0lz9Z4RPK1hRoCv6waD-56lbeXwSfP2s5X21RSvcQ',
+        cai_processes: '1mGJV45qSKuEfmftWgtrOGp6H5r9AY45IaXw_CfXZHJo'
     },
 
     // OAuth Configuration (if USE_OAUTH is true)
