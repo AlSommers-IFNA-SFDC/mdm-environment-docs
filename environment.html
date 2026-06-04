@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment - MDM Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', sans-serif;
+            background: #F3F3F3;
+            color: #032D60;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Edit Mode Toggle */
+        .edit-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            background: #0176D3;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(1, 118, 211, 0.3);
+            transition: all 0.3s;
+        }
+
+        .edit-mode-toggle:hover {
+            background: #032D60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(1, 118, 211, 0.4);
+        }
+
+        .edit-mode-toggle.active {
+            background: #FF538A;
+        }
+
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 260px;
+            z-index: 2000;
+            background: white;
+            color: #032D60;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid #0176D3;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #0176D3;
+            color: white;
+        }
+
+        /* Side Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #032D60;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            background: #021829;
+            border-bottom: 2px solid #0176D3;
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .org-id {
+            font-size: 12px;
+            color: #8DB9F5;
+            font-family: 'Courier New', monospace;
+        }
+
+        .nav-menu {
+            padding: 16px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(1, 118, 211, 0.2);
+            border-left-color: #0176D3;
+        }
+
+        .nav-item.active {
+            background: rgba(1, 118, 211, 0.3);
+            border-left-color: #FF538A;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            color: #032D60;
+            margin-bottom: 12px;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            color: #6B7280;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0176D3;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #032D60;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #0176D3;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: #0176D3;
+            color: white;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        tbody tr:hover {
+            background: #F9FAFB;
+        }
+
+        /* Editable cells */
+        .editable {
+            position: relative;
+            cursor: text;
+            min-height: 20px;
+        }
+
+        body.edit-mode .editable {
+            background: #FEF3C7;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px dashed #F59E0B;
+        }
+
+        body.edit-mode .editable:hover {
+            background: #FDE68A;
+            border-color: #D97706;
+        }
+
+        body.edit-mode .editable:focus {
+            outline: 2px solid #0176D3;
+            background: white;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 4px 4px 4px 0;
+        }
+
+        .tag.primary {
+            background: #E0F2FE;
+            color: #0176D3;
+        }
+
+        .tag.success {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        /* Use Case Grid */
+        .use-case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .use-case-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #0176D3;
+        }
+
+        .use-case-card h3 {
+            color: #032D60;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .use-case-card p {
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        /* Loading / Error States */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(3, 45, 96, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            color: white;
+            font-size: 18px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #E0F2FE;
+            border-top-color: #0176D3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #FEE2E2;
+            border: 2px solid #DC2626;
+            color: #991B1B;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        /* Save indicator */
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #059669;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+
+        .save-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .save-indicator.error {
+            background: #DC2626;
+        }
+
+        /* Placeholder */
+        .placeholder {
+            background: #FEF3C7;
+            border: 2px dashed #F59E0B;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            color: #92400E;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+                padding: 20px;
+            }
+            .back-button {
+                left: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div>
+            <div class="loading-spinner"></div>
+            <p>Loading environment data...</p>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="index-dynamic.html" class="back-button">← Back to Index</a>
+
+    <!-- Edit Mode Toggle -->
+    <button class="edit-mode-toggle" id="editModeToggle" onclick="toggleEditMode()" style="display: none;">
+        📝 Enable Editing
+    </button>
+
+    <!-- Save Indicator -->
+    <div class="save-indicator" id="saveIndicator">
+        ✓ Saved to Google Sheets
+    </div>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 id="nav-env-name">Loading...</h1>
+                <div class="org-id" id="nav-org-id">-</div>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <div class="nav-item active" onclick="scrollToSection('overview')">Overview</div>
+                <div class="nav-item" onclick="scrollToSection('customer-demos')">Customer Demos</div>
+                <div class="nav-item" onclick="scrollToSection('use-cases')">Use Case Areas</div>
+                <div class="nav-item" onclick="scrollToSection('entities')">Business Entities</div>
+                <div class="nav-item" onclick="scrollToSection('hierarchies')">Hierarchies</div>
+                <div class="nav-item" onclick="scrollToSection('relationships')">Relationships</div>
+                <div class="nav-item" onclick="scrollToSection('data-quality')">Data Quality</div>
+                <div class="nav-item" onclick="scrollToSection('cai-processes')">CAI Processes</div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Content populated by JavaScript -->
+        </main>
+    </div>
+
+    <script src="google-sheets-integration.js"></script>
+    <script>
+        let currentEnvId = null;
+        let editMode = false;
+
+        // Get environment ID from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        currentEnvId = urlParams.get('env');
+
+        if (!currentEnvId) {
+            showError('No environment specified. Please select an environment from the index.');
+        } else {
+            window.addEventListener('load', async () => {
+                await loadEnvironmentData();
+            });
+        }
+
+        async function loadEnvironmentData() {
+            try {
+                // Load environment overview
+                const env = await googleSheets.getEnvironment(currentEnvId);
+                if (!env) {
+                    showError(`Environment "${currentEnvId}" not found in Google Sheets.`);
+                    return;
+                }
+
+                // Update page title and navigation
+                document.title = `${env.name} - MDM Documentation`;
+                document.getElementById('nav-env-name').textContent = env.name;
+                document.getElementById('nav-org-id').textContent = env.org_id;
+
+                // Load all data in parallel
+                const [demos, useCases, entities, hierarchies, relationships, qualityRules, caiProcesses] = await Promise.all([
+                    googleSheets.getCustomerDemos(currentEnvId),
+                    googleSheets.getUseCases(currentEnvId),
+                    googleSheets.getBusinessEntities(currentEnvId),
+                    googleSheets.getHierarchies(currentEnvId),
+                    googleSheets.getRelationships(currentEnvId),
+                    googleSheets.getDataQualityRules(currentEnvId),
+                    googleSheets.getCAIProcesses(currentEnvId)
+                ]);
+
+                // Render all sections
+                renderEnvironment(env, demos, useCases, entities, hierarchies, relationships, qualityRules, caiProcesses);
+
+                // Show edit button
+                document.getElementById('editModeToggle').style.display = 'block';
+
+                // Hide loading overlay
+                document.getElementById('loadingOverlay').style.display = 'none';
+
+            } catch (error) {
+                console.error('Error loading environment:', error);
+                showError(`Failed to load environment data: ${error.message}`);
+            }
+        }
+
+        function renderEnvironment(env, demos, useCases, entities, hierarchies, relationships, qualityRules, caiProcesses) {
+            const mainContent = document.getElementById('mainContent');
+
+            mainContent.innerHTML = `
+                <div class="header">
+                    <h1>${env.name} Environment</h1>
+                    <div class="subtitle">${env.description}</div>
+                    <div class="stats-bar">
+                        <div class="stat">
+                            <div class="stat-value">${entities.length}</div>
+                            <div class="stat-label">Business Entities</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${useCases.length}</div>
+                            <div class="stat-label">Use Cases</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${demos.length}</div>
+                            <div class="stat-label">Customer Demos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overview Section -->
+                <section id="overview">
+                    <h2 class="section-title">Overview</h2>
+                    <div class="card">
+                        <h3>Environment Details</h3>
+                        <p><strong>Name:</strong> ${env.name}</p>
+                        <p><strong>Org ID:</strong> <code>${env.org_id}</code></p>
+                        <p><strong>Description:</strong> <span class="editable" data-sheet="environments" data-field="description" data-id="${env.env_id}">${env.description}</span></p>
+                        <p style="margin-top: 16px; font-size: 12px; color: #6B7280;"><strong>Last Updated:</strong> ${env.last_updated}</p>
+                    </div>
+                </section>
+
+                <!-- Customer Demos Section -->
+                <section id="customer-demos">
+                    <h2 class="section-title">Customer Demos</h2>
+                    ${demos.length > 0 ? `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Demo Name</th>
+                                    <th>Use Case(s)</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${demos.map(demo => `
+                                    <tr>
+                                        <td><strong>${demo.demo_name}</strong></td>
+                                        <td><span class="editable" data-sheet="customer_demos" data-field="use_cases" data-id="${demo.demo_name}" data-env="${currentEnvId}">${demo.use_cases || 'TBD'}</span></td>
+                                        <td><span class="editable" data-sheet="customer_demos" data-field="notes" data-id="${demo.demo_name}" data-env="${currentEnvId}">${demo.notes || ''}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<div class="placeholder"><p>No customer demos configured</p></div>'}
+                </section>
+
+                <!-- Use Case Areas Section -->
+                <section id="use-cases">
+                    <h2 class="section-title">Use Case Areas</h2>
+                    ${useCases.length > 0 ? `
+                        <div class="use-case-grid">
+                            ${useCases.map(uc => `
+                                <div class="use-case-card">
+                                    <h3>${uc.name}</h3>
+                                    <p class="editable" data-sheet="use_cases" data-field="description" data-id="${uc.use_case_id}" data-env="${currentEnvId}">${uc.description}</p>
+                                    <div style="margin-top: 12px;">
+                                        <span class="tag success">${uc.status}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="placeholder"><p>No use cases configured</p></div>'}
+                </section>
+
+                <!-- Business Entities Section -->
+                <section id="entities">
+                    <h2 class="section-title">Business Entities</h2>
+                    ${entities.length > 0 ? `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Entity Name</th>
+                                    <th>Entity ID</th>
+                                    <th>Description</th>
+                                    <th>Use Case(s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${entities.map(entity => {
+                                    const useCaseTags = (entity.use_cases || '').split(',')
+                                        .filter(uc => uc.trim())
+                                        .map(uc => `<span class="tag primary">${uc.trim()}</span>`)
+                                        .join('');
+
+                                    return `
+                                        <tr>
+                                            <td><strong>${entity.entity_name}</strong></td>
+                                            <td><span class="editable" data-sheet="business_entities" data-field="entity_id" data-id="${entity.entity_name}" data-env="${currentEnvId}">${entity.entity_id || 'TBD'}</span></td>
+                                            <td><span class="editable" data-sheet="business_entities" data-field="description" data-id="${entity.entity_name}" data-env="${currentEnvId}">${entity.description}</span></td>
+                                            <td>${useCaseTags}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<div class="placeholder"><p>No business entities configured</p></div>'}
+                </section>
+
+                <!-- Hierarchies Section -->
+                <section id="hierarchies">
+                    <h2 class="section-title">Hierarchies</h2>
+                    ${hierarchies.length > 0 ? `
+                        ${hierarchies.map(h => `
+                            <div class="card">
+                                <h3>${h.hierarchy_name}</h3>
+                                <p><strong>Levels:</strong> ${h.levels}</p>
+                                <p><strong>Root Node:</strong> ${h.root_node || 'N/A'}</p>
+                                <p><strong>Description:</strong> ${h.description || 'No description'}</p>
+                            </div>
+                        `).join('')}
+                    ` : '<div class="placeholder"><p>No hierarchies configured in Google Sheets</p></div>'}
+                </section>
+
+                <!-- Relationships Section -->
+                <section id="relationships">
+                    <h2 class="section-title">Relationships</h2>
+                    ${relationships.length > 0 ? `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>From Entity</th>
+                                    <th>To Entity</th>
+                                    <th>Type</th>
+                                    <th>Cardinality</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${relationships.map(r => `
+                                    <tr>
+                                        <td><strong>${r.from_entity}</strong></td>
+                                        <td><strong>${r.to_entity}</strong></td>
+                                        <td>${r.relationship_type}</td>
+                                        <td>${r.cardinality || 'N/A'}</td>
+                                        <td>${r.description || ''}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<div class="placeholder"><p>No relationships configured in Google Sheets</p></div>'}
+                </section>
+
+                <!-- Data Quality Section -->
+                <section id="data-quality">
+                    <h2 class="section-title">Data Quality</h2>
+                    ${qualityRules.length > 0 ? `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rule Name</th>
+                                    <th>Entity</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${qualityRules.map(rule => `
+                                    <tr>
+                                        <td><strong>${rule.rule_name}</strong></td>
+                                        <td>${rule.entity}</td>
+                                        <td>${rule.rule_type}</td>
+                                        <td>${rule.description || ''}</td>
+                                        <td><span class="tag ${rule.status === 'Active' ? 'success' : 'primary'}">${rule.status}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<div class="placeholder"><p>No data quality rules configured in Google Sheets</p></div>'}
+                </section>
+
+                <!-- CAI Processes Section -->
+                <section id="cai-processes">
+                    <h2 class="section-title">CAI Processes</h2>
+                    ${caiProcesses.length > 0 ? `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Process Name</th>
+                                    <th>Schedule</th>
+                                    <th>Last Run</th>
+                                    <th>Status</th>
+                                    <th>Dependencies</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${caiProcesses.map(proc => `
+                                    <tr>
+                                        <td><strong>${proc.process_name}</strong></td>
+                                        <td>${proc.schedule || 'N/A'}</td>
+                                        <td>${proc.last_run || 'Never'}</td>
+                                        <td><span class="tag ${proc.status === 'Success' ? 'success' : 'primary'}">${proc.status || 'Unknown'}</span></td>
+                                        <td>${proc.dependencies || 'None'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<div class="placeholder"><p>No CAI processes configured in Google Sheets</p></div>'}
+                </section>
+            `;
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            document.body.classList.toggle('edit-mode', editMode);
+
+            const toggleBtn = document.getElementById('editModeToggle');
+            if (editMode) {
+                toggleBtn.textContent = '💾 Save & Exit Editing';
+                toggleBtn.classList.add('active');
+                enableEditing();
+            } else {
+                toggleBtn.textContent = '📝 Enable Editing';
+                toggleBtn.classList.remove('active');
+                disableEditing();
+            }
+        }
+
+        function enableEditing() {
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(el => {
+                el.contentEditable = true;
+                el.addEventListener('blur', handleEdit);
+            });
+        }
+
+        function disableEditing() {
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(el => {
+                el.contentEditable = false;
+                el.removeEventListener('blur', handleEdit);
+            });
+        }
+
+        async function handleEdit(event) {
+            const el = event.target;
+            const sheet = el.dataset.sheet;
+            const field = el.dataset.field;
+            const id = el.dataset.id;
+            const newValue = el.textContent.trim();
+
+            try {
+                const sheetId = googleSheets.CONFIG.SHEET_IDS[sheet];
+                const matchColumn = sheet === 'environments' ? 'env_id' :
+                                  sheet === 'customer_demos' ? 'demo_name' :
+                                  sheet === 'use_cases' ? 'use_case_id' : 'entity_name';
+
+                await googleSheets.findAndUpdateRow(sheetId, matchColumn, id, {
+                    [field]: newValue
+                });
+
+                showSaveIndicator('✓ Saved to Google Sheets', 'success');
+            } catch (error) {
+                console.error('Error saving:', error);
+                showSaveIndicator('⚠ Error saving changes', 'error');
+            }
+        }
+
+        function showSaveIndicator(message, type = 'success') {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.textContent = message;
+            indicator.classList.remove('error');
+            if (type === 'error') {
+                indicator.classList.add('error');
+            }
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 3000);
+        }
+
+        function showError(message) {
+            document.getElementById('loadingOverlay').innerHTML = `
+                <div style="text-align: center; max-width: 500px; padding: 40px;">
+                    <h2 style="margin-bottom: 16px;">⚠️ Error</h2>
+                    <p>${message}</p>
+                    <a href="index-dynamic.html" style="display: inline-block; margin-top: 24px; padding: 12px 24px; background: white; color: #032D60; text-decoration: none; border-radius: 8px; font-weight: 600;">← Back to Index</a>
+                </div>
+            `;
+        }
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.currentTarget.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

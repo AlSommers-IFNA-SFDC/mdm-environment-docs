@@ -138,13 +138,6 @@
             display: inline-block;
         }
 
-        .env-card-description {
-            color: #6B7280;
-            font-size: 14px;
-            line-height: 1.5;
-            margin: 12px 0;
-        }
-
         .env-card-stats {
             display: flex;
             gap: 24px;
@@ -176,26 +169,15 @@
             color: #9CA3AF;
         }
 
-        /* Loading State */
-        .loading {
-            text-align: center;
-            color: white;
-            padding: 60px;
-            font-size: 18px;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #E0F2FE;
-            border-top-color: #0176D3;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 4px 4px 4px 0;
+            background: #E0F2FE;
+            color: #0176D3;
         }
 
         /* Empty State */
@@ -224,20 +206,6 @@
             color: white;
             opacity: 0.7;
             font-size: 14px;
-        }
-
-        /* Error State */
-        .error-state {
-            background: #FEE2E2;
-            border: 2px solid #DC2626;
-            border-radius: 12px;
-            padding: 24px;
-            margin: 20px 0;
-            color: #991B1B;
-        }
-
-        .error-state h3 {
-            margin-bottom: 8px;
         }
 
         /* Responsive */
@@ -269,135 +237,73 @@
         </div>
 
         <!-- Summary Statistics -->
-        <div class="summary-stats" id="summaryStats">
+        <div class="summary-stats">
             <div class="summary-stat">
-                <div class="summary-stat-value" id="totalEnvs">-</div>
+                <div class="summary-stat-value">1</div>
                 <div class="summary-stat-label">Environments</div>
             </div>
             <div class="summary-stat">
-                <div class="summary-stat-value" id="totalEntities">-</div>
+                <div class="summary-stat-value">11</div>
                 <div class="summary-stat-label">Total Entities</div>
             </div>
             <div class="summary-stat">
-                <div class="summary-stat-value" id="totalUseCases">-</div>
+                <div class="summary-stat-value">5</div>
                 <div class="summary-stat-label">Use Cases</div>
             </div>
         </div>
 
-        <!-- Loading State -->
-        <div class="loading" id="loadingState">
-            <div class="loading-spinner"></div>
-            <p>Loading environments from Google Sheets...</p>
-        </div>
-
-        <!-- Error State -->
-        <div id="errorState" style="display: none;"></div>
-
         <!-- Environment Cards -->
-        <div class="env-grid" id="envGrid" style="display: none;">
-            <!-- Populated by JavaScript -->
+        <div class="env-grid" id="envGrid">
+            <!-- Industrial Manufacturing Environment -->
+            <a href="env-industrial-manufacturing.html" class="env-card" data-env="industrial manufacturing">
+                <div class="env-card-header">
+                    <div class="env-card-title">Industrial Manufacturing</div>
+                    <div class="env-card-org-id">7XRX7lLm9QEkrgxi7U2J2R</div>
+                </div>
+
+                <div class="env-card-stats">
+                    <div class="env-stat">
+                        <div class="env-stat-value">5</div>
+                        <div class="env-stat-label">Use Cases</div>
+                    </div>
+                    <div class="env-stat">
+                        <div class="env-stat-value">11</div>
+                        <div class="env-stat-label">Entities</div>
+                    </div>
+                    <div class="env-stat">
+                        <div class="env-stat-value">6</div>
+                        <div class="env-stat-label">Demos</div>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="tag">Supplier Mastering</span>
+                    <span class="tag">Distributor Network</span>
+                    <span class="tag">BOM</span>
+                    <span class="tag">Supply Chain</span>
+                    <span class="tag">Product360</span>
+                </div>
+
+                <div class="env-card-footer">
+                    Last updated: June 3, 2026
+                </div>
+            </a>
         </div>
 
-        <!-- Empty State -->
+        <!-- Empty State (hidden when environments exist) -->
         <div class="empty-state" id="emptyState" style="display: none;">
             <div class="empty-state-icon">📋</div>
             <h2>No environments found</h2>
-            <p>Try adjusting your search or add a new environment to Google Sheets</p>
+            <p>Try adjusting your search or add a new environment</p>
         </div>
 
         <!-- Footer -->
-        <div class="footer" id="footer">
-            MDM Environment Documentation System | Loading...
+        <div class="footer">
+            MDM Environment Documentation System | Last updated: June 3, 2026
         </div>
     </div>
 
-    <script src="google-sheets-integration.js"></script>
     <script>
-        let allEnvironments = [];
-
-        // Load data on page load
-        window.addEventListener('load', async () => {
-            await loadEnvironments();
-        });
-
-        async function loadEnvironments() {
-            try {
-                document.getElementById('loadingState').style.display = 'block';
-                document.getElementById('errorState').style.display = 'none';
-
-                // Load all environments from Google Sheets
-                allEnvironments = await googleSheets.getEnvironments();
-
-                if (!allEnvironments || allEnvironments.length === 0) {
-                    showEmptyState();
-                    return;
-                }
-
-                // Calculate summary stats
-                const totalEnvs = allEnvironments.length;
-                const totalEntities = allEnvironments.reduce((sum, env) => sum + (parseInt(env.entity_count) || 0), 0);
-                const totalUseCases = allEnvironments.reduce((sum, env) => sum + (parseInt(env.use_case_count) || 0), 0);
-
-                document.getElementById('totalEnvs').textContent = totalEnvs;
-                document.getElementById('totalEntities').textContent = totalEntities;
-                document.getElementById('totalUseCases').textContent = totalUseCases;
-
-                // Render environment cards
-                renderEnvironments(allEnvironments);
-
-                // Update footer
-                const lastUpdated = new Date().toLocaleDateString();
-                document.getElementById('footer').textContent = `MDM Environment Documentation System | Last updated: ${lastUpdated}`;
-
-                // Hide loading, show grid
-                document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('envGrid').style.display = 'grid';
-
-            } catch (error) {
-                console.error('Error loading environments:', error);
-                showError(error);
-            }
-        }
-
-        function renderEnvironments(environments) {
-            const grid = document.getElementById('envGrid');
-            grid.innerHTML = environments.map(env => {
-                const envUrl = `environment.html?env=${env.env_id}`;
-
-                return `
-                    <a href="${envUrl}" class="env-card" data-env="${env.name.toLowerCase()} ${env.org_id}">
-                        <div class="env-card-header">
-                            <div class="env-card-title">${env.name}</div>
-                            <div class="env-card-org-id">${env.org_id}</div>
-                        </div>
-
-                        <div class="env-card-description">
-                            ${env.description || 'No description available'}
-                        </div>
-
-                        <div class="env-card-stats">
-                            <div class="env-stat">
-                                <div class="env-stat-value">${env.use_case_count || 0}</div>
-                                <div class="env-stat-label">Use Cases</div>
-                            </div>
-                            <div class="env-stat">
-                                <div class="env-stat-value">${env.entity_count || 0}</div>
-                                <div class="env-stat-label">Entities</div>
-                            </div>
-                            <div class="env-stat">
-                                <div class="env-stat-value">${env.demo_count || 0}</div>
-                                <div class="env-stat-label">Demos</div>
-                            </div>
-                        </div>
-
-                        <div class="env-card-footer">
-                            Last updated: ${env.last_updated || 'Unknown'}
-                        </div>
-                    </a>
-                `;
-            }).join('');
-        }
-
         function filterEnvironments() {
             const input = document.getElementById('searchInput');
             const filter = input.value.toLowerCase();
@@ -418,34 +324,13 @@
             }
 
             // Show empty state if no results
-            if (visibleCount === 0 && cards.length > 0) {
+            if (visibleCount === 0) {
                 grid.style.display = 'none';
                 emptyState.style.display = 'block';
             } else {
                 grid.style.display = 'grid';
                 emptyState.style.display = 'none';
             }
-        }
-
-        function showEmptyState() {
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('emptyState').style.display = 'block';
-            document.getElementById('footer').textContent = 'MDM Environment Documentation System | No environments configured';
-        }
-
-        function showError(error) {
-            document.getElementById('loadingState').style.display = 'none';
-
-            const errorState = document.getElementById('errorState');
-            errorState.style.display = 'block';
-            errorState.className = 'error-state';
-            errorState.innerHTML = `
-                <h3>⚠️ Error Loading Environments</h3>
-                <p>${error.message || 'Failed to load data from Google Sheets'}</p>
-                <p style="margin-top: 12px; font-size: 12px;">
-                    Check the browser console for details or verify your Google Sheets configuration in <code>google-sheets-integration.js</code>
-                </p>
-            `;
         }
     </script>
 </body>

@@ -6,6 +6,7 @@
 2. Click **New** → **Folder**
 3. Name it: `Environment Documentation`
 4. Note the folder ID from the URL (you'll need this later)
+    https://drive.google.com/drive/folders/12ux1vp1lrMGHLIfvt-D5aXbwnKZpdbJ2
 
 ## Step 2: Create Google Sheets
 
@@ -284,14 +285,14 @@ For each sheet, you have two options:
 
 ```javascript
 const GOOGLE_SHEETS_CONFIG = {
-  environments: 'YOUR_SHEET_ID_HERE',
-  use_cases: 'YOUR_SHEET_ID_HERE',
-  business_entities: 'YOUR_SHEET_ID_HERE',
-  customer_demos: 'YOUR_SHEET_ID_HERE',
-  hierarchies: 'YOUR_SHEET_ID_HERE',
-  relationships: 'YOUR_SHEET_ID_HERE',
-  data_quality_rules: 'YOUR_SHEET_ID_HERE',
-  cai_processes: 'YOUR_SHEET_ID_HERE'
+  environments: '1L9W4_kUfDPWOrZKZZVjZkpAHB80kadyj3uGgDqvoWRU,
+  use_cases: '1wItpKtnHXZgXPirEQ_s26ZqLFwynbNp1J3fuUdJiEDw',
+  business_entities: '1CQTt8qQRYiLPNhYQlKnqxkYFM5-tONDfPHg6hJD1BPM',
+  customer_demos: '1rQj98r6E6G7vhnHM4Rfux3lZyC9RL85TI9QBjvhML6Y,
+  hierarchies: '10yoDt_VAjn9Hkhl6GoZQgHvhfE10SwOfb5yG9Usbwdg',
+  relationships: '13P_BjoppHlPRQtzgrX-lv9XxhlV153FJUBcxgBZviEs',
+  data_quality_rules: '1OL0lz9Z4RPK1hRoCv6waD-56lbeXwSfP2s5X21RSvcQ',
+  cai_processes: '1mGJV45qSKuEfmftWgtrOGp6H5r9AY45IaXw_CfXZHJo'
 };
 ```
 
