@@ -111,6 +111,22 @@ class GoogleSheetsAPI {
             const response = await fetch(url);
             const text = await response.text();
 
+            // Check if we got an HTML response (means sheet is private)
+            if (text.trim().startsWith('<!DOCTYPE html>') || text.trim().startsWith('<html')) {
+                throw new Error(`Sheet ${sheetId} is not publicly accessible. Please share it as "Anyone with the link can view". See FIX_SHEETS_SHARING.md for instructions.`);
+            }
+
+            // Check for Google Sheets error responses
+            if (text.includes('google.visualization.Query.setResponse')) {
+                const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\)/);
+                if (jsonMatch) {
+                    const responseData = JSON.parse(jsonMatch[1]);
+                    if (responseData.status === 'error') {
+                        throw new Error(`Google Sheets error: ${responseData.errors[0].detailed_message || responseData.errors[0].reason}`);
+                    }
+                }
+            }
+
             // Google Sheets returns JSONP, need to parse it
             const jsonString = text.substring(47, text.length - 2);
             const data = JSON.parse(jsonString);
@@ -118,6 +134,8 @@ class GoogleSheetsAPI {
             return this.parseGoogleSheetsData(data);
         } catch (error) {
             console.error('Error reading public sheet:', error);
+            console.error('Sheet ID:', sheetId);
+            console.error('URL:', url);
             throw error;
         }
     }
